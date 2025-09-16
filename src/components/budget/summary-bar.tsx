@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { formatCurrency, type PlanSummary } from "@/lib/budget";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 interface SummaryBarProps {
   summary?: PlanSummary;
@@ -19,12 +19,7 @@ export function SummaryBar({
 }: SummaryBarProps) {
   if (!summary) return null;
 
-  const items: Array<{
-    key: string;
-    label: string;
-    value: number;
-    emphasise?: boolean;
-  }> = [
+  const items = [
     { key: "income", label: "Income", value: summary.income },
     { key: "needs", label: "Needs", value: summary.needs },
     { key: "wants", label: "Wants", value: summary.wants },
@@ -51,9 +46,9 @@ export function SummaryBar({
       aria-label="Plan summary"
     >
       <div className="mx-auto w-full max-w-6xl px-4 py-3 sm:py-4">
-        {/* <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-5"> */}
         <ScrollArea className="w-full">
-          <div className="flex h-full justify-between gap-3 text-sm min-w-max">
+          {/* Mobile: force horizontal overflow; Desktop: allow normal flex fill */}
+          <div className="flex h-full gap-3 text-sm min-w-max sm:min-w-0">
             {items.map(({ key, label, value, emphasise }) => {
               const formatted = formatCurrency(value, locale, currency);
               const isNegative = value < 0;
@@ -61,7 +56,9 @@ export function SummaryBar({
                 <div
                   key={key}
                   className={cn(
-                    "rounded-xl border w-full border-transparent bg-card/70 px-3 py-2 shadow-sm backdrop-blur transition hover:border-primary/40",
+                    // Mobile: fixed card width + no flex growth
+                    // Desktop (sm+): let items flex and fill
+                    "flex-none w-[160px] rounded-xl border border-transparent bg-card/70 px-3 py-2 shadow-sm backdrop-blur transition hover:border-primary/40 sm:flex-1 sm:w-auto",
                     emphasise ? "ring-1 ring-inset ring-primary/40" : undefined
                   )}
                 >
@@ -84,6 +81,9 @@ export function SummaryBar({
               );
             })}
           </div>
+
+          {/* Horizontal scrollbar shows when needed (mostly on mobile) */}
+          <ScrollBar orientation="horizontal" />
         </ScrollArea>
       </div>
     </div>

@@ -78,4 +78,4 @@ The app is optimised for platforms that support Next.js 15 (Vercel, Netlify, etc
 
 ## License
 
-Specify your license of choice before publishing. For now, all rights are reserved to the project author.
+Released under the [MIT License](LICENSE).
