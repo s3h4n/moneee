@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -8,30 +8,41 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import type { Category, CategoryType, BudgetBucket, SinkingFund } from "@/types"
-import { createId } from "@/lib/id"
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import type {
+  Category,
+  CategoryType,
+  BudgetBucket,
+  SinkingFund,
+} from "@/types";
+import { createId } from "@/lib/id";
 
 interface CategoryFormDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSubmit: (category: Category) => void
-  initialCategory?: Category
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (category: Category) => void;
+  initialCategory?: Category;
 }
 
 interface FormState {
-  id: string
-  name: string
-  type: CategoryType
-  bucket: BudgetBucket
-  amountMonthly: string
-  capMonthly?: string
-  target?: string
-  dueDate?: string
+  id: string;
+  name: string;
+  type: CategoryType;
+  bucket: BudgetBucket;
+  amountMonthly: string;
+  capMonthly?: string;
+  target?: string;
+  dueDate?: string;
 }
 
 const defaultState: FormState = {
@@ -40,10 +51,15 @@ const defaultState: FormState = {
   type: "fixed",
   bucket: "needs",
   amountMonthly: "",
-}
+};
 
-export function CategoryFormDialog({ open, onOpenChange, onSubmit, initialCategory }: CategoryFormDialogProps) {
-  const [form, setForm] = useState<FormState>(defaultState)
+export function CategoryFormDialog({
+  open,
+  onOpenChange,
+  onSubmit,
+  initialCategory,
+}: CategoryFormDialogProps) {
+  const [form, setForm] = useState<FormState>(defaultState);
 
   useEffect(() => {
     if (initialCategory) {
@@ -53,21 +69,29 @@ export function CategoryFormDialog({ open, onOpenChange, onSubmit, initialCatego
         type: initialCategory.type,
         bucket: initialCategory.bucket,
         amountMonthly: String(initialCategory.amountMonthly ?? ""),
-        capMonthly: initialCategory.capMonthly ? String(initialCategory.capMonthly) : undefined,
-        target: initialCategory.type === "sinking" ? String(initialCategory.target) : undefined,
-        dueDate: initialCategory.type === "sinking" ? initialCategory.dueDate : undefined,
-      })
+        capMonthly: initialCategory.capMonthly
+          ? String(initialCategory.capMonthly)
+          : undefined,
+        target:
+          initialCategory.type === "sinking"
+            ? String((initialCategory as SinkingFund).target)
+            : undefined,
+        dueDate:
+          initialCategory.type === "sinking"
+            ? (initialCategory as SinkingFund).dueDate
+            : undefined,
+      });
     } else {
       setForm({
         ...defaultState,
         id: createId("category"),
-      })
+      });
     }
-  }, [initialCategory, open])
+  }, [initialCategory, open]);
 
   const handleSubmit = () => {
-    const amountMonthly = Number(form.amountMonthly)
-    if (!Number.isFinite(amountMonthly)) return
+    const amountMonthly = Number(form.amountMonthly);
+    if (!Number.isFinite(amountMonthly)) return;
     const base: Category = {
       id: form.id || createId("category"),
       name: form.name,
@@ -75,31 +99,35 @@ export function CategoryFormDialog({ open, onOpenChange, onSubmit, initialCatego
       bucket: form.bucket,
       amountMonthly,
       capMonthly: form.capMonthly ? Number(form.capMonthly) : undefined,
-    }
-    let final: Category = base
+    };
+    let final: Category = base;
     if (form.type === "sinking") {
-      const target = Number(form.target ?? 0)
-      const dueDate = form.dueDate ?? new Date().toISOString().slice(0, 10)
+      const target = Number(form.target ?? 0);
+      const dueDate = form.dueDate ?? new Date().toISOString().slice(0, 10);
       final = {
         ...base,
         type: "sinking",
         target,
         dueDate,
-      } as SinkingFund
+      } as SinkingFund;
     }
-    onSubmit(final)
-    onOpenChange(false)
-  }
+    onSubmit(final);
+    onOpenChange(false);
+  };
 
-  const isSinking = form.type === "sinking"
-  const isEnvelope = form.type === "envelope"
+  const isSinking = form.type === "sinking";
+  const isEnvelope = form.type === "envelope";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{initialCategory ? "Edit category" : "Add category"}</DialogTitle>
-          <DialogDescription>Plan how much to set aside for this category each month.</DialogDescription>
+          <DialogTitle>
+            {initialCategory ? "Edit category" : "Add category"}
+          </DialogTitle>
+          <DialogDescription>
+            Plan how much to set aside for this category each month.
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-2">
           <div className="grid gap-2">
@@ -107,7 +135,9 @@ export function CategoryFormDialog({ open, onOpenChange, onSubmit, initialCatego
             <Input
               id="category-name"
               value={form.name}
-              onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
+              onChange={(event) =>
+                setForm((prev) => ({ ...prev, name: event.target.value }))
+              }
             />
           </div>
           <div className="grid gap-2 sm:grid-cols-2">
@@ -164,7 +194,12 @@ export function CategoryFormDialog({ open, onOpenChange, onSubmit, initialCatego
               type="number"
               min={0}
               value={form.amountMonthly}
-              onChange={(event) => setForm((prev) => ({ ...prev, amountMonthly: event.target.value }))}
+              onChange={(event) =>
+                setForm((prev) => ({
+                  ...prev,
+                  amountMonthly: event.target.value,
+                }))
+              }
             />
           </div>
           {isEnvelope && (
@@ -175,7 +210,12 @@ export function CategoryFormDialog({ open, onOpenChange, onSubmit, initialCatego
                 type="number"
                 min={0}
                 value={form.capMonthly ?? ""}
-                onChange={(event) => setForm((prev) => ({ ...prev, capMonthly: event.target.value }))}
+                onChange={(event) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    capMonthly: event.target.value,
+                  }))
+                }
               />
             </div>
           )}
@@ -188,7 +228,9 @@ export function CategoryFormDialog({ open, onOpenChange, onSubmit, initialCatego
                   type="number"
                   min={0}
                   value={form.target ?? ""}
-                  onChange={(event) => setForm((prev) => ({ ...prev, target: event.target.value }))}
+                  onChange={(event) =>
+                    setForm((prev) => ({ ...prev, target: event.target.value }))
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -197,7 +239,12 @@ export function CategoryFormDialog({ open, onOpenChange, onSubmit, initialCatego
                   id="category-due"
                   type="date"
                   value={form.dueDate ?? ""}
-                  onChange={(event) => setForm((prev) => ({ ...prev, dueDate: event.target.value }))}
+                  onChange={(event) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      dueDate: event.target.value,
+                    }))
+                  }
                 />
               </div>
             </div>
@@ -210,5 +257,5 @@ export function CategoryFormDialog({ open, onOpenChange, onSubmit, initialCatego
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
