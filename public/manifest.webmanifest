@@ -1,0 +1,17 @@
+{
+  "name": "Moneee Budget Planner",
+  "short_name": "Moneee",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#0f172a",
+  "background_color": "#ffffff",
+  "description": "Privacy-first, offline budget planning with transparent maths and no tracking.",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
